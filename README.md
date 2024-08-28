@@ -132,3 +132,7 @@ Now you should be able to update your applications again.
 		- Sonarr: v4.0.8.1874
 		- stun-turn-server: latest
 		- unpackerr: v0.14.0
+
+
+#### Sync
+Need to sync updates from https://github.com/truecharts/charts
