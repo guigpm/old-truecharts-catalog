@@ -21,7 +21,7 @@ Therefore I decided to fork their archived chart repository and manually push so
     2.  Add this repository as a new Catalog:
         1.  *Add Catalog* --> *Continue*
             - **Catalog Name:** TrueCharts
-            - **Repository:** https://github.com/v3DJG6GL/truecharts_archive
+            - **Repository:** https://github.com/guigpm/old-truecharts-catalog (based on [v3DJG6GL/truecharts_archive](https://github.com/v3DJG6GL/truecharts_archive))
             - **Preferred Trains:** incubator, premium, stable, system
             - **Branch:** main
 
