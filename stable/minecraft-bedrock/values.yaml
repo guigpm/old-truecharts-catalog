@@ -1,6 +1,6 @@
 image:
   repository: itzg/minecraft-bedrock-server
-  tag: latest@sha256:d7a6795c1de2a381384477497bd3feba0e04666f404f97470bef2b204e056a90
+  tag: latest@sha256:10a549e540dad31fb3acda7bc3e3fca52f73d57031ff36eedade602b92bf7e51
   pullPolicy: Always
 service:
   main:
