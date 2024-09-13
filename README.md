@@ -53,7 +53,7 @@ Now you should be able to update your applications again.
         - minio: v2024.08.29 *(Updated: 2024.09.03)*
 		- ollama: v0.3.9 *(Updated: 2024.09.03)* ***(Requested)***
 		- paperless-ngx: v2.11.6 *(Updated: 2024.08.26)* ***(Requested)***
-		- plex: v1.40.5.8897 *(Updated: 2024.08.26)* ***(Requested)***
+		- plex: v1.41.0.8992 *(Updated: 2024.09.13)* ***(Requested)***
         - prowlarr: v1.23.1.4708 *(Updated: 2024.09.03)*
 		- qbittorrent: v4.6.6 *(Updated: 2024.08.26)*
         - radarr: v5.9.1.9070 *(Updated: 2024.08.26)*
@@ -69,6 +69,9 @@ Now you should be able to update your applications again.
 
 
 - ### Changelog:
+	- 2024.09.13:
+	    - plex: v1.41.0.8992
+
 	- 2024.09.03:
 		- nextcloud: v29.0.6
 		- changedetection.io: v0.46.04
