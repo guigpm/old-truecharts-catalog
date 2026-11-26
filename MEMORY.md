@@ -21,6 +21,13 @@
 
 ## Histórico
 
+### 2026-11-26 — README dos apps acompanhados
+
+- A tabela em `README.md` lista AdGuard Home, Cloudflared, Jellyfin e Navidrome
+  com os registries usados em `update_apps.py`. Também documenta a confirmação das
+  imagens e os limites de versão de AdGuard Home e Jellyfin.
+- Conferidos os repositórios e filtros com o atualizador e verificado o diff.
+
 ### 2026-11-26 — Serviços Running da captura do TrueNAS
 
 - `update_apps.py` segue as releases estáveis e mantém os repositórios de imagem

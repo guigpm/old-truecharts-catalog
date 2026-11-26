@@ -21,6 +21,10 @@ A daily GitHub Actions cron job ([`update_apps.py`](update_apps.py)):
 
 | App | Source |
 |-----|--------|
+| AdGuard Home (0.x) | docker.io/adguard/adguardhome |
+| Cloudflared | docker.io/cloudflare/cloudflared |
+| Jellyfin (10.x) | ghcr.io/jellyfin/jellyfin |
+| Navidrome | docker.io/deluan/navidrome |
 | Immich (2.x) | ghcr.io/immich-app/immich-server + immich-machine-learning (CPU/CUDA/OpenVINO) |
 | Plex | ghcr.io/home-operations/plex |
 | Jackett | linuxserver/jackett |
@@ -36,6 +40,10 @@ A daily GitHub Actions cron job ([`update_apps.py`](update_apps.py)):
 | Seerr | seerr/seerr |
 | Threadfin | fyb3roptik/threadfin |
 | qBittorrent | oci.trueforge.org/containerforge/qbittorrent |
+
+These four apps track stable releases and require image availability to be confirmed
+before a new chart is generated. AdGuard Home stays on 0.x. Jellyfin stays on 10.x
+pending review of the [database changes in Jellyfin 12](https://github.com/jellyfin/jellyfin/releases/tag/v12.0).
 
 Radarr, Sonarr, Prowlarr, and Lidarr use `rolling` image tags and auto-update via container restart.
 
