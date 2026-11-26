@@ -91,6 +91,19 @@ APPS = [
         ],
     },
     {
+        "name": "immich-v3",
+        "path": "stable/immich-v3",
+        "image_repo": "ghcr.io/immich-app/immich-server",
+        "tag_format": "v{version}",
+        "version_source": "github_release",
+        "github_repo": "immich-app/immich",
+        "version_major": 3,
+        "additional_images": [
+            {"key": "mlImage", "image_repo": "ghcr.io/immich-app/immich-machine-learning", "tag_format": "v{version}"},
+            {"key": "mlCudaImage", "image_repo": "ghcr.io/immich-app/immich-machine-learning", "tag_format": "v{version}-cuda"},
+        ],
+    },
+    {
         "name": "plex",
         "path": "stable/plex",
         "require_image_confirmation": True,

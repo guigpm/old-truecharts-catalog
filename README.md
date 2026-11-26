@@ -26,6 +26,7 @@ A daily GitHub Actions cron job ([`update_apps.py`](update_apps.py)):
 | Jellyfin (10.x) | ghcr.io/jellyfin/jellyfin |
 | Navidrome | docker.io/deluan/navidrome |
 | Immich (2.x) | ghcr.io/immich-app/immich-server + immich-machine-learning (CPU/CUDA/OpenVINO) |
+| Immich 3 (separate app) | ghcr.io/immich-app/immich-server + immich-machine-learning (CPU/CUDA) |
 | Plex | ghcr.io/home-operations/plex |
 | Jackett | linuxserver/jackett |
 | Syncthing | docker.io/syncthing/syncthing |
@@ -130,7 +131,7 @@ Edit the `APPS` list in [`update_apps.py`](update_apps.py). Each entry needs:
 - [TrueCharts](https://truecharts.org) — original chart catalog
 - [v3DJG6GL](https://github.com/v3DJG6GL/truecharts_archive) — maintained the fork for 1.5 years
 
-### Immich automatic updates
+### Immich 2 automatic updates
 
 Immich tracks stable GitHub releases in the **2.x** series. The existing chart uses
 pgvecto.rs; [Immich v3 removed support for it](https://immich.app/blog/v3-migration).
@@ -149,3 +150,22 @@ python3 update_apps.py --apps immich
 The existing daily workflow includes Immich automatically once these changes reach
 the default branch. This updates the catalog; installing the update on TrueNAS is
 a separate step.
+
+### Install Immich 3 alongside Immich 2
+
+Install `immich-v3` from the `stable` train as a separate app. On TrueNAS
+SCALE 24.04, enable the `system` train and make sure `prometheus-operator`
+and `cloudnative-pg` are running. Use new PVCs or dedicated host paths,
+keep PostgreSQL 16 in standalone mode, and set a unique database password.
+The chart provisions a fresh VectorChord database and exposes the web UI
+on port **10324** by default. Choose CPU for the first install. CUDA is
+also available.
+
+The daily workflow tracks stable 3.x releases for this chart. To preview updates:
+
+```bash
+python3 update_apps.py --dry-run --apps immich-v3
+```
+
+For existing data, plan a separate migration before reusing any v2 storage or
+restoring its database. See the [Immich v3 migration guide](https://immich.app/blog/v3-migration).

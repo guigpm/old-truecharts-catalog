@@ -2,6 +2,10 @@
 
 ## Resumo atual
 
+- `stable/immich-v3/1.0.0` oferece Immich 3.4.2 como instalação separada
+  com PostgreSQL 16 + VectorChord, armazenamento próprio e porta 10324.
+  O fluxo diário acompanha a série 3.x com imagens CPU e CUDA.
+
 - Immich chart 15.22.4 mantém appVersion 2.7.5 e corrige as imagens de espera
   do PostgreSQL e Redis para o registro `oci.trueforge.org`.
 
@@ -23,6 +27,28 @@
 - Edite `AI_UPDATE_GUIDE.md` apenas quando mudarem as instruções gerais de automação.
 
 ## Histórico
+
+### 2026-11-26 — Chart separado para Immich 3
+
+- Criado `stable/immich-v3/1.0.0` a partir do chart 15.22.4. Preservados
+  os init containers corrigidos e trocado também o domínio da imagem Alpine
+  usada para aguardar a API. Os volumes de mídia agora montam sob `/data`.
+- CloudNativePG mantém PostgreSQL 16 e cria `vchord` (com `vector`), `cube`
+  e `earthdistance` no banco novo. Usa a imagem CNPG da TensorChord com
+  VectorChord 0.4.3, digest verificado e `vchord.so` em preload.
+- CPU e CUDA usam imagens 3.4.2 confirmadas. OpenVINO foi omitido porque a
+  imagem de 3.4.2 não foi publicada: https://github.com/immich-app/immich/issues/33470.
+- Pontos de entrada: `catalog.json`, `stable/immich-v3/app_versions.json`,
+  formulário `questions.yaml` e `python3 update_apps.py --dry-run --apps immich-v3`.
+- Validação: 9 testes passaram. Helm 3.14.4 executou lint e renderizou o
+  chart com namespace `ix-immich-v3` e contexto SCALE simulado. Confirmados
+  os manifests do Cluster CNPG, imagens, porta e caminhos de mídia.
+  Em Docker descartável, a API retornou `{"res":"pong"}` com PostgreSQL
+  VectorChord e Redis. A consulta real do atualizador confirmou 3.4.2.
+- README principal documenta pré-requisitos, instalação separada e simulação de atualização.
+- Pendente publicar o catálogo e testar no TrueNAS, incluindo o operador CNPG,
+  os PVCs, os workers, ML e um upload de teste. A migração de dados da v2 deve
+  ser tratada separadamente.
 
 ### 2026-11-26 — Correção do deploy do Immich
 

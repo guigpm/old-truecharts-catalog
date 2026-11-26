@@ -25372,6 +25372,40 @@
             "categories": [
                 "media"
             ]
+        },
+        "immich-v3": {
+            "name": "immich-v3",
+            "description": "Immich 3 photo and video backup with a dedicated VectorChord database.",
+            "healthy": true,
+            "healthy_error": null,
+            "home": "https://truecharts.org/charts/stable/immich",
+            "location": "/home/runner/_work/catalog/catalog/stable/immich-v3",
+            "latest_version": "1.0.0",
+            "latest_app_version": "3.4.2",
+            "latest_human_version": "3.4.2_1.0.0",
+            "last_update": "2026-11-26 17:46:20",
+            "recommended": false,
+            "tags": [],
+            "screenshots": [],
+            "app_readme": "<p>Immich 3 photo and video backup with a dedicated VectorChord database.</p>\n<p>This App is supplied by TrueCharts, for more information visit the manual: <a href=\"https://truecharts.org/charts/stable/immich-v3\">https://truecharts.org/charts/stable/immich-v3</a></p>\n<hr />\n<p>TrueCharts can only exist due to the incredible effort of our staff.\nPlease consider making a <a href=\"https://truecharts.org/sponsor\">donation</a> or contributing back to the project any way you can!</p>",
+            "title": "Immich V3",
+            "sources": [
+                "https://ghcr.io/immich-app/immich-machine-learning",
+                "https://ghcr.io/immich-app/immich-server",
+                "https://github.com/immich-app/immich",
+                "https://github.com/truecharts/charts/tree/master/charts/stable/immich"
+            ],
+            "maintainers": [
+                {
+                    "name": "TrueCharts",
+                    "email": "info@truecharts.org",
+                    "url": "https://truecharts.org"
+                }
+            ],
+            "icon_url": "https://truecharts.org/img/hotlink-ok/chart-icons/immich.webp",
+            "categories": [
+                "media"
+            ]
         }
     },
     "system": {
