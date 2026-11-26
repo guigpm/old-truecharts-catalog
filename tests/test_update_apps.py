@@ -67,6 +67,14 @@ class ImmichUpdateTests(unittest.TestCase):
             self.run_update()
         self.assertFalse(self.new.exists())
 
+    def test_strict_single_image_requires_registry_confirmation(self):
+        self.app = {k: v for k, v in self.app.items() if k != 'additional_images'}
+        self.app['require_image_confirmation'] = True
+        self.assertEqual(self.run_update(availability=None), ((None, None), 0))
+        self.assertFalse(self.new.exists())
+        self.assertEqual(self.run_update(availability=True)[0], ('immich', '2.5.0'))
+        self.assertIn('tag: v2.4.1-cuda', (self.new / 'ix_values.yaml').read_text())
+
     def test_single_image_behavior_is_preserved(self):
         self.app = {k: v for k, v in self.app.items() if k != 'additional_images'}
         self.assertEqual(self.run_update()[1], 1)

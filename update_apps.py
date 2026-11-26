@@ -37,6 +37,45 @@ REPO_ROOT = Path(__file__).resolve().parent
 
 APPS = [
     {
+        "name": "adguard-home",
+        "path": "stable/adguard-home",
+        "image_repo": "docker.io/adguard/adguardhome",
+        "tag_format": "v{version}",
+        "version_source": "github_release",
+        "github_repo": "AdguardTeam/AdGuardHome",
+        "require_image_confirmation": True,
+        "version_major": 0,
+    },
+    {
+        "name": "cloudflared",
+        "path": "stable/cloudflared",
+        "image_repo": "docker.io/cloudflare/cloudflared",
+        "tag_format": "{version}",
+        "version_source": "github_release",
+        "github_repo": "cloudflare/cloudflared",
+        "require_image_confirmation": True,
+    },
+    {
+        "name": "jellyfin",
+        "path": "stable/jellyfin",
+        "image_repo": "ghcr.io/jellyfin/jellyfin",
+        "tag_format": "{version}",
+        "version_source": "github_release",
+        "github_repo": "jellyfin/jellyfin",
+        "require_image_confirmation": True,
+        # Jellyfin 12 introduces a database migration that needs review.
+        "version_major": 10,
+    },
+    {
+        "name": "navidrome",
+        "path": "stable/navidrome",
+        "image_repo": "docker.io/deluan/navidrome",
+        "tag_format": "{version}",
+        "version_source": "github_release",
+        "github_repo": "navidrome/navidrome",
+        "require_image_confirmation": True,
+    },
+    {
         "name": "immich",
         "path": "stable/immich",
         "image_repo": "ghcr.io/immich-app/immich-server",
@@ -54,6 +93,7 @@ APPS = [
     {
         "name": "plex",
         "path": "stable/plex",
+        "require_image_confirmation": True,
         "image_repo": "ghcr.io/home-operations/plex",
         "tag_format": "{version}",
         "version_source": "ghcr_tags",
@@ -217,6 +257,7 @@ APPS = [
         # home-operations' own published tags instead (same approach as plex).
         "name": "qbittorrent",
         "path": "stable/qbittorrent",
+        "require_image_confirmation": True,
         "image_repo": "ghcr.io/home-operations/qbittorrent",
         "tag_format": "{version}",
         "version_source": "ghcr_tags",
@@ -563,11 +604,13 @@ def update_app(app_config, dry_run=False):
     log(f"{name}: {current_app_version} -> {latest_version}")
 
     images = [{"key": "image", **app_config}] + app_config.get("additional_images", [])
-    # Multi-image apps must have every variant published before any files change.
+    # Require positive registry confirmation for all variants of multi-image apps
+    # and for apps that opt into strict checks.
+    require_confirmation = len(images) > 1 or app_config.get("require_image_confirmation", False)
     for image in images:
         tag = image.get("tag_format", "{version}").format(version=latest_version)
         exists = image_exists(image["image_repo"], tag)
-        if exists is False or (len(images) > 1 and exists is not True):
+        if exists is False or (require_confirmation and exists is not True):
             log(f"{name}: image {image['image_repo']}:{tag} unavailable or lookup failed; skipping", "WARN")
             return None, None
 
@@ -581,7 +624,7 @@ def update_app(app_config, dry_run=False):
             if not digest:
                 log(f"{name}: no digest found, using tag only", "WARN")
         value = f"{tag}@{digest}" if digest else tag
-        if app_config.get("additional_images"):
+        if require_confirmation:
             ix_text = update_image_block(ix_text, image["key"], image["image_repo"], value)
         else:
             # Preserve the existing single-image updater behavior.
