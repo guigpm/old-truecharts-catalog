@@ -1,0 +1,31 @@
+image:
+  repository: "docker.io/cloudflare/cloudflared"
+  pullPolicy: "IfNotPresent"
+  tag: "2026.11.2@sha256:55c7e3e8d89d5e8d20b75a82f3602cbf98e06db406e73e282073cfdc5a9a3af6"
+workload:
+  main:
+    podSpec:
+      containers:
+        main:
+          probes:
+            liveness:
+              enabled: false
+            readiness:
+              enabled: false
+            startup:
+              enabled: false
+          args:
+          - tunnel
+          - --no-autoupdate
+          - run
+          env:
+            TUNNEL_TOKEN: ""
+service:
+  main:
+    enabled: false
+    ports:
+      main:
+        enabled: false
+portal:
+  open:
+    enabled: false
