@@ -17,6 +17,11 @@
 
 ## Histórico
 
+### 2026-11-26 — Nome do arquivo de memória
+
+- Padronizada a extensão para `.md` e atualizado o link em `AGENTS.md`.
+- Verificados o nome do arquivo e o destino do link.
+
 ### 2026-11-26 — Organização da documentação
 
 - Retirada do guia a seção específica do Immich. Na lista `APPS` de
