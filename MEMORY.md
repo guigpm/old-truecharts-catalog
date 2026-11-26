@@ -2,7 +2,7 @@
 
 ## Resumo atual
 
-- `stable/immich-v3/1.0.0` oferece Immich 3.4.2 como instalação separada
+- `stable/immich-v3/1.0.1` oferece Immich 3.4.2 como instalação separada
   com PostgreSQL 16 + VectorChord, armazenamento próprio e porta 10324.
   O fluxo diário acompanha a série 3.x com imagens CPU e CUDA.
 
@@ -27,6 +27,26 @@
 - Edite `AI_UPDATE_GUIDE.md` apenas quando mudarem as instruções gerais de automação.
 
 ## Histórico
+
+### 2026-11-26 — Falha podSpec na instalação do Immich v3
+
+- Reproduzido no Helm o erro do SCALE 24.04.2.5 com `workload.enable_ml` e
+  `workload.mlImageType` vindos do formulário 1.0.0. O helper de espera
+  trata cada entrada de `workload` como um objeto de pod.
+- Chart 1.0.1 move as opções para `immich` em `questions.yaml` e no schema
+  de `app_versions.json`. O template também aceita os campos antigos,
+  movendo-os antes do loader. Índices atualizados, appVersion segue 3.4.2.
+- Helm lint e renders SCALE passaram com valores padrão, formulário antigo,
+  ML desativado e CUDA. Verificados os dois waits e a seleção de ML.
+  Os 9 testes Python passaram. Pendente publicar e repetir no NAS.
+
+### 2026-11-26 — Immich v3 ausente da busca
+
+- Confirmado no índice público da branch main que `stable/immich-v3` aponta
+  para chart 1.0.0 e que seus metadados públicos marcam a versão como suportada
+  e saudável. Corrigida a URL de setup no README, que apontava para o fork
+  Flangvik. No NAS, verificar URL, branch main e train stable e atualizar o
+  catálogo. Se persistir, verificar o resultado do job de sincronização.
 
 ### 2026-11-26 — Status do workflow no README
 
