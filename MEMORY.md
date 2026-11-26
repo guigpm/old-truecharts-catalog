@@ -2,6 +2,10 @@
 
 ## Resumo atual
 
+- AdGuard Home, Cloudflared, Jellyfin e Navidrome foram adicionados ao fluxo
+  diário. Plex e qBittorrent já tinham automação no catálogo e agora exigem
+  confirmação do registro de imagens, assim como os quatro novos.
+
 - O atualizador `update_apps.py` inclui Immich no workflow diário existente
   (`.github/workflows/weekly-update.yaml`, 06:00 UTC).
 - Immich acompanha releases estáveis **2.x**, com servidor e ML CPU/CUDA/OpenVINO
@@ -16,6 +20,33 @@
 - Edite `AI_UPDATE_GUIDE.md` apenas quando mudarem as instruções gerais de automação.
 
 ## Histórico
+
+### 2026-11-26 — Serviços Running da captura do TrueNAS
+
+- `update_apps.py` segue as releases estáveis e mantém os repositórios de imagem
+  dos charts de AdGuard Home, Cloudflared, Jellyfin e Navidrome. A instância
+  `cloudflared-tun` aparece como TrueCharts e o chart correspondente é
+  `stable/cloudflared`. A captura não confirma a origem exata da instância.
+- AdGuard Home acompanha 0.x. Jellyfin acompanha 10.x devido às mudanças no banco
+  ao migrar para 12.0: https://github.com/jellyfin/jellyfin/releases/tag/v12.0.
+- Plex e qBittorrent consultam tags numéricas do GHCR, mantendo as imagens
+  `home-operations`. Commits 947192b96 e 1bc1f8980 mostram atualizações reais
+  dos respectivos charts. Falhas de consulta do manifesto agora bloqueiam
+  esses dois charts e os quatro novos. O bloco principal `image` é editado
+  pelo nome, mantendo imagens auxiliares.
+- Kasm ficou pendente. O chart roda `kasmweb/workspaces` com `/opt` persistente
+  e a troca de tag não foi validada como migração de uma instalação existente.
+  Referência: https://docs.kasm.com/docs/latest/how-to/upgrade/single-server-upgrade.
+- `cloudflareddns-github`, MinIO, NTP e a instância do qBittorrent aparecem
+  como TrueNAS na captura. O fluxo desse catálogo não atualiza essas instalações.
+  Para avaliar automação nelas, faltam os charts ou imagens efetivamente em uso
+  e acesso ao ambiente. A revisão de qBittorrent cobre `stable/qbittorrent`.
+- Validação: 9 testes e `git -c core.whitespace=cr-at-eol diff --check` passaram.
+  Em dry-run com rede, foram confirmadas as imagens candidatas a AdGuard Home
+  0.107.80, Cloudflared 2026.11.2, Jellyfin 10.11.11 e Navidrome 0.64.2.
+  Plex 1.43.5.11079 e qBittorrent 5.3.1 já estavam em dia no catálogo e seus
+  manifestos atuais foram confirmados diretamente no GHCR.
+- Alteração local no fluxo existente. Pendente publicação e validação no NAS.
 
 ### 2026-11-26 — Nome do arquivo de memória
 
