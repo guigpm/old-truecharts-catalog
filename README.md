@@ -60,7 +60,7 @@ Add this repo as a catalog in TrueNAS SCALE:
 2. Delete your existing (deprecated) TrueCharts catalog if present
 3. **Add Catalog** > **Continue**:
    - **Catalog Name:** `TrueCharts`
-   - **Repository:** `https://github.com/Flangvik/truecharts_archive`
+   - **Repository:** `https://github.com/guigpm/old-truecharts-catalog`
    - **Preferred Trains:** `stable, incubator, premium, system`
    - **Branch:** `main`
 
