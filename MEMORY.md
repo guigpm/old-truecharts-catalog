@@ -2,6 +2,9 @@
 
 ## Resumo atual
 
+- Immich chart 15.22.4 mantém appVersion 2.7.5 e corrige as imagens de espera
+  do PostgreSQL e Redis para o registro `oci.trueforge.org`.
+
 - AdGuard Home, Cloudflared, Jellyfin e Navidrome foram adicionados ao fluxo
   diário. Plex e qBittorrent já tinham automação no catálogo e agora exigem
   confirmação do registro de imagens, assim como os quatro novos.
@@ -20,6 +23,21 @@
 - Edite `AI_UPDATE_GUIDE.md` apenas quando mudarem as instruções gerais de automação.
 
 ## Histórico
+
+### 2026-11-26 — Correção do deploy do Immich
+
+- No SCALE 24.04.2.5, PostgreSQL e Redis rodavam, mas o init do servidor
+  falhava com `ImagePullBackOff` ao buscar o digest antigo de `db-wait-postgres`.
+  A troca manual dos dois init containers funcionou segundo o usuário.
+- Criado chart 15.22.4 a partir do 15.22.3. Os blocos `postgresClientImage`
+  e `redisClientImage` em `ix_values.yaml` apontam para os digests v1.1.0
+  verificados no registro novo para linux/amd64. Dependências empacotadas
+  foram mantidas. O atualizador copia esses overrides nas versões seguintes.
+- Regenerados `stable/immich/app_versions.json` e `catalog.json`.
+  Helm 3.14.4 renderizou com Kubernetes 1.29 e os valores do chart.
+  Confirmadas as duas imagens novas e a presença do recurso CNPG Cluster.
+  O render local usou namespace sem prefixo ix, reservado pelo chart ao SCALE.
+- Pendente publicação e validação do upgrade pelo catálogo no TrueNAS.
 
 ### 2026-11-26 — README dos apps acompanhados
 
