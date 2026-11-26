@@ -37,6 +37,21 @@ REPO_ROOT = Path(__file__).resolve().parent
 
 APPS = [
     {
+        "name": "immich",
+        "path": "stable/immich",
+        "image_repo": "ghcr.io/immich-app/immich-server",
+        "tag_format": "v{version}",
+        "version_source": "github_release",
+        "github_repo": "immich-app/immich",
+        # v3 removed pgvecto.rs, which this chart still uses.
+        "version_major": 2,
+        "additional_images": [
+            {"key": "mlImage", "image_repo": "ghcr.io/immich-app/immich-machine-learning", "tag_format": "v{version}"},
+            {"key": "mlCudaImage", "image_repo": "ghcr.io/immich-app/immich-machine-learning", "tag_format": "v{version}-cuda"},
+            {"key": "mlOpenvinoImage", "image_repo": "ghcr.io/immich-app/immich-machine-learning", "tag_format": "v{version}-openvino"},
+        ],
+    },
+    {
         "name": "plex",
         "path": "stable/plex",
         "image_repo": "ghcr.io/home-operations/plex",
@@ -237,8 +252,24 @@ def github_api(url):
         return None
 
 
-def get_latest_github_release(repo):
+def get_latest_github_release(repo, major=None):
     """Get latest release version from GitHub (strips 'v' prefix)."""
+    if major is not None:
+        versions = []
+        for page in range(1, 11):
+            releases = github_api(f"https://api.github.com/repos/{repo}/releases?per_page=100&page={page}")
+            if releases is None:
+                return None
+            for release in releases:
+                if release.get("draft") or release.get("prerelease"):
+                    continue
+                version = release.get("tag_name", "").removeprefix("v")
+                if re.fullmatch(rf"{major}\.\d+\.\d+", version):
+                    versions.append(version)
+            if len(releases) < 100:
+                return max(versions, key=lambda v: tuple(map(int, v.split(".")))) if versions else None
+        log(f"Release pagination limit reached for {repo}; skipping", "WARN")
+        return None
     data = github_api(f"https://api.github.com/repos/{repo}/releases/latest")
     if data and "tag_name" in data:
         return data["tag_name"].lstrip("v")
@@ -322,7 +353,7 @@ def get_latest_version(app_config):
     source = app_config.get("version_source", "github_release")
 
     if source == "github_release":
-        return get_latest_github_release(app_config["github_repo"])
+        return get_latest_github_release(app_config["github_repo"], app_config.get("version_major"))
     elif source == "github_tags":
         prefix = app_config.get("github_tag_prefix", "")
         return get_latest_github_tag(app_config["github_repo"], prefix)
@@ -480,6 +511,25 @@ def increment_patch(version):
     return ".".join(parts)
 
 
+def update_image_block(text, key, repository, tag):
+    """Update an explicit top-level image block, preserving other YAML values."""
+    pattern = rf"^{re.escape(key)}:[ \t]*\n(?:[ \t]+[^\n]*\n|[ \t]*\n)*"
+    matches = list(re.finditer(pattern, text, re.MULTILINE))
+    if len(matches) != 1:
+        raise ValueError(f"Expected exactly one image block: {key}")
+    match = matches[0]
+    block = match.group()
+    for field, value in (("repository", repository), ("tag", tag)):
+        block, count = re.subn(
+            rf"^(  {field}:[ \t]*)[^\n]*$",
+            lambda m: m.group(1) + json.dumps(value),
+            block, flags=re.MULTILINE,
+        )
+        if count != 1:
+            raise ValueError(f"Expected exactly one {key}.{field}")
+    return text[:match.start()] + block + text[match.end():]
+
+
 # ── Main update logic ────────────────────────────────────────────────────────
 
 def update_app(app_config, dry_run=False):
@@ -512,12 +562,34 @@ def update_app(app_config, dry_run=False):
 
     log(f"{name}: {current_app_version} -> {latest_version}")
 
-    # Guard: don't bump to a version whose image isn't published yet (avoids
-    # ErrImagePull / pods that never start). None = lookup error -> proceed.
-    probe_tag = app_config.get("tag_format", "{version}").format(version=latest_version)
-    if image_exists(app_config["image_repo"], probe_tag) is False:
-        log(f"{name}: image {app_config['image_repo']}:{probe_tag} not published yet; skipping", "WARN")
-        return None, None
+    images = [{"key": "image", **app_config}] + app_config.get("additional_images", [])
+    # Multi-image apps must have every variant published before any files change.
+    for image in images:
+        tag = image.get("tag_format", "{version}").format(version=latest_version)
+        exists = image_exists(image["image_repo"], tag)
+        if exists is False or (len(images) > 1 and exists is not True):
+            log(f"{name}: image {image['image_repo']}:{tag} unavailable or lookup failed; skipping", "WARN")
+            return None, None
+
+    ix_text = (version_dir / "ix_values.yaml").read_text()
+    for image in images:
+        tag = image.get("tag_format", "{version}").format(version=latest_version)
+        digest = None
+        if not dry_run and not image.get("skip_digest", False):
+            log(f"{name}: fetching digest for {image['image_repo']}:{tag}...")
+            digest = get_image_digest(image["image_repo"], tag)
+            if not digest:
+                log(f"{name}: no digest found, using tag only", "WARN")
+        value = f"{tag}@{digest}" if digest else tag
+        if app_config.get("additional_images"):
+            ix_text = update_image_block(ix_text, image["key"], image["image_repo"], value)
+        else:
+            # Preserve the existing single-image updater behavior.
+            ix_text = re.sub(
+                r"^(\s*tag:\s*)[^\n]*$",
+                lambda m: m.group(1) + json.dumps(value),
+                ix_text, count=1, flags=re.MULTILINE,
+            )
 
     if dry_run:
         return name, latest_version
@@ -541,30 +613,7 @@ def update_app(app_config, dry_run=False):
     )
     chart_file.write_text(chart_text)
 
-    # Build new image tag
-    tag_format = app_config.get("tag_format", "{version}")
-    image_tag = tag_format.format(version=latest_version)
-
-    digest = None
-    if not app_config.get("skip_digest", False):
-        log(f"{name}: fetching digest for {app_config['image_repo']}:{image_tag}...")
-        digest = get_image_digest(app_config["image_repo"], image_tag)
-        if digest:
-            log(f"{name}: digest {digest[:20]}...")
-        else:
-            log(f"{name}: no digest found, using tag only", "WARN")
-
-    new_tag_value = f"{image_tag}@{digest}" if digest else image_tag
-
-    # Update ix_values.yaml (first tag: line only = main image)
-    ix_file = new_version_dir / "ix_values.yaml"
-    ix_text = ix_file.read_text()
-    ix_text = re.sub(
-        r"""^(\s*tag:\s*)['"]?[^\n]*$""",
-        rf'\1"{new_tag_value}"',
-        ix_text, count=1, flags=re.MULTILINE,
-    )
-    ix_file.write_text(ix_text)
+    (new_version_dir / "ix_values.yaml").write_text(ix_text)
 
     log(f"{name}: created chart {new_chart_version} (appVersion={latest_version})")
     return name, latest_version

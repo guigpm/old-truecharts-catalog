@@ -21,6 +21,7 @@ A daily GitHub Actions cron job ([`update_apps.py`](update_apps.py)):
 
 | App | Source |
 |-----|--------|
+| Immich (2.x) | ghcr.io/immich-app/immich-server + immich-machine-learning (CPU/CUDA/OpenVINO) |
 | Plex | ghcr.io/home-operations/plex |
 | Jackett | linuxserver/jackett |
 | Syncthing | docker.io/syncthing/syncthing |
@@ -120,3 +121,23 @@ Edit the `APPS` list in [`update_apps.py`](update_apps.py). Each entry needs:
 
 - [TrueCharts](https://truecharts.org) — original chart catalog
 - [v3DJG6GL](https://github.com/v3DJG6GL/truecharts_archive) — maintained the fork for 1.5 years
+
+### Immich automatic updates
+
+Immich tracks stable GitHub releases in the **2.x** series. The existing chart uses
+pgvecto.rs; [Immich v3 removed support for it](https://immich.app/blog/v3-migration).
+Migrate and validate the chart database configuration before changing `version_major`.
+
+The updater checks all four images (server, CPU ML, CUDA ML, OpenVINO ML) before
+creating a chart version, updates their tags together, and resolves each digest
+separately. If any image is missing or its availability cannot be confirmed, the
+update is skipped. Templates and bundled dependencies are preserved.
+
+```bash
+python3 update_apps.py --dry-run --apps immich
+python3 update_apps.py --apps immich
+```
+
+The existing daily workflow includes Immich automatically once these changes reach
+the default branch. This updates the catalog; installing the update on TrueNAS is
+a separate step.

@@ -157,3 +157,20 @@ To update an app: copy the latest version folder, bump the chart version and app
 | `build_app_versions.py` | Adds new version entries to app_versions.json for version dirs on disk |
 | `cleanup_versions.py` | Prunes old versions (keeps N latest) and updates app_versions.json |
 | `.github/workflows/build-catalog.yaml` | Runs build_app_versions.py on push; commits and pushes JSON updates |
+
+### Apps with synchronized images (Immich)
+
+`update_apps.py` supports `additional_images`: a list of objects containing `key`
+(the top-level block in `ix_values.yaml`), `image_repo`, and `tag_format`.
+Immich updates `image`, `mlImage`, `mlCudaImage`, and `mlOpenvinoImage` together;
+all images must be confirmed available before creating a chart directory. Each
+image gets its own digest when available. Missing image blocks abort the update.
+
+For GitHub releases, optional `version_major` selects only stable releases within
+that major version (excluding drafts and prereleases). Immich is limited to 2.x
+because the bundled chart uses pgvecto.rs, removed in Immich 3. Migrate and validate
+the database before lifting this limit. See https://immich.app/blog/v3-migration.
+
+Validate updater changes with `python3 -m unittest discover -s tests -v` and
+`python3 update_apps.py --dry-run --apps immich`. The existing daily workflow
+already processes every configured app; no workflow change is required.
