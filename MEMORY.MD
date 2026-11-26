@@ -8,7 +8,22 @@
   sincronizados. O chart atual usa pgvecto.rs, incompatível com Immich 3.
 - A automação foi preparada para publicação. A instalação no TrueNAS segue pendente.
 
+## Onde registrar informações
+
+- Consulte este arquivo primeiro para localizar pontos de entrada e verificações anteriores.
+- Mantenha neste arquivo os detalhes por aplicativo, atalhos de busca, decisões e
+  aprendizados que reduzam trabalho repetido. Atualize o resumo e preserve o histórico.
+- Edite `AI_UPDATE_GUIDE.md` apenas quando mudarem as instruções gerais de automação.
+
 ## Histórico
+
+### 2026-11-26 — Organização da documentação
+
+- Retirada do guia a seção específica do Immich. Na lista `APPS` de
+  `update_apps.py`, cada item de `additional_images` recebe `key` (bloco de
+  primeiro nível em `ix_values.yaml`), `image_repo` e `tag_format`. Para o
+  Immich, procure por `image`, `mlImage`, `mlCudaImage` e `mlOpenvinoImage`.
+- Alteração documental verificada com `git -c core.whitespace=cr-at-eol diff --check`.
 
 ### 2026-11-26 — Automação do Immich
 
