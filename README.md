@@ -1,5 +1,7 @@
 # TrueCharts Archive
 
+[![Daily App Updates](https://github.com/guigpm/old-truecharts-catalog/actions/workflows/weekly-update.yaml/badge.svg)](https://github.com/guigpm/old-truecharts-catalog/actions/workflows/weekly-update.yaml)
+
 A maintained fork of the [TrueCharts](https://github.com/truecharts/charts) Helm chart catalog for TrueNAS SCALE (23.10 / 24.04).
 
 ## Background

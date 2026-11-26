@@ -28,6 +28,11 @@
 
 ## Histórico
 
+### 2026-11-26 — Status do workflow no README
+
+- Badge Daily App Updates adicionado abaixo do título. Conferidos o caminho
+  de `.github/workflows/weekly-update.yaml` e o diff.
+
 ### 2026-11-26 — Chart separado para Immich 3
 
 - Criado `stable/immich-v3/1.0.0` a partir do chart 15.22.4. Preservados
